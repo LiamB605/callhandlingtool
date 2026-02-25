@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor Toolkit | Cardiff & Vale</title>
+    <style>
+        :root {
+            --ca-navy: #004b88;
+            --ca-yellow: #ffcc00;
+            --ca-light-blue: #eef3f8;
+            --ca-red: #a50000;
+            --ca-green: #27ae60;
+            --text-main: #333;
+            --border-color: #d1d9e0;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f7f9; 
+            margin: 0; 
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--ca-navy);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 20px 0;
+            color: white;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .sidebar h2 {
+            font-size: 1.1rem;
+            padding: 0 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--ca-yellow);
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding-left: 25px;
+        }
+
+        /* Main Content - Centered */
+        .main-content {
+            margin-right: auto;
+            margin-left: auto;
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            left: 130px; 
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                left: 0;
+                margin-left: 260px;
+            }
+        }
+
+        .header-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border-bottom: 6px solid var(--ca-yellow);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-info h1 { margin: 0; color: var(--ca-navy); font-size: 1.8rem; }
+        .header-info p { margin: 10px 0 0 0; color: #666; font-size: 0.95rem; }
+
+        .lang-toggle {
+            background: var(--ca-navy);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .lang-toggle:hover { background: #003366; }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            scroll-margin-top: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--ca-light-blue);
+        }
+
+        .section-number {
+            background: var(--ca-navy);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .section-header h2 { margin: 0; font-size: 1.3rem; color: var(--ca-navy); }
+
+        .chat-row { display: flex; align-items: flex-start; margin-bottom: 20px; }
+        .advisor-icon { font-size: 1.8rem; margin-right: 15px; }
+        .advisor-bubble {
+            background: var(--ca-light-blue);
+            padding: 15px 20px;
+            border-radius: 0 15px 15px 15px;
+            color: var(--ca-navy);
+            font-weight: 500;
+            line-height: 1.5;
+            border-left: 4px solid var(--ca-navy);
+            flex: 1;
+        }
+
+        .script-box {
+            background: #fffafa;
+            border: 1px solid #f2dede;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .caller-prompt {
+            color: var(--ca-red);
+            font-weight: bold;
+            display: block;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #f2dede;
+            padding-bottom: 5px;
+        }
+
+        .script-list { list-style: none; padding: 0; margin: 0; }
+        .script-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .script-list li::before {
+            content: '➔';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--ca-navy);
+            font-weight: bold;
+        }
+
+        .tip-card {
+            background: #e7f4ec;
+            border-left: 5px solid var(--ca-green);
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #2e5a41;
+        }
+
+        .tip-card span.icon { margin-right: 12px; font-size: 1.2rem; }
+
+        .deflated-notice {
+            text-align: center;
+            padding: 20px;
+            margin-top: 10px;
+            color: var(--ca-navy);
+            font-size: 1rem;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.75rem;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        html { scroll-behavior: smooth; }
+        strong { color: var(--ca-navy); }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div style="padding: 20px; text-align: center;">
+        <div id="sidebar-label" style="background: white; border-radius: 4px; padding: 5px; color: var(--ca-navy); font-weight: bold; font-size: 0.7rem;">
+            CARDIFF & VALE
+        </div>
+    </div>
+    <h2 id="jump-title">QUICK JUMP</h2>
+    <a href="#control" class="nav-link" data-en="1. Call Control" data-cy="1. Rheoli Galwadau">1. Call Control</a>
+    <a href="#hypo" class="nav-link" data-en="2. Hypotheticals" data-cy="2. Damcaniaethol">2. Hypotheticals</a>
+    <a href="#boundaries" class="nav-link" data-en="3. Boundaries" data-cy="3. Ffiniau">3. Boundaries</a>
+    <a href="#emotion" class="nav-link" data-en="4. High Emotion" data-cy="4. Emosiwn Uchel">4. High Emotion</a>
+    <a href="#norights" class="nav-link" data-en="5. No Legal Rights" data-cy="5. Dim Hawliau">5. No Legal Rights</a>
+    <a href="#court" class="nav-link" data-en="6. Last Resort (Court)" data-cy="6. Cam Olaf (Llys)">6. Last Resort (Court)</a>
+    <a href="#wrong" class="nav-link" data-en="7. Wrong Department" data-cy="7. Adran Anghywir">7. Wrong Department</a>
+    <a href="#abusive" class="nav-link" data-en="8. Abusive Calls" data-cy="8. Galwadau Sarhaus">8. Abusive Calls</a>
+    <a href="#circular" class="nav-link" data-en="9. Circular Calls" data-cy="9. Galwadau Cylchol">9. Circular Calls</a>
+    <a href="#closing" class="nav-link" data-en="10. Final Closing" data-cy="10. Cau Terfynol">10. Final Closing</a>
+</div>
+
+<div class="main-content">
+    <div class="header-card">
+        <div class="header-info">
+            <h1 id="main-title">Advisor Call Handling Toolkit</h1>
+            <p id="main-subtitle">Citizens Advice Cardiff & Vale | Consumer Service Specialist Guidance</p>
+        </div>
+        <button class="lang-toggle" onclick="toggleLanguage()" id="lang-btn">Cymraeg</button>
+    </div>
+
+    <div id="control" class="section-card">
+        <div class="section-header">
+            <div class="section-number">1</div>
+            <h2 class="trans-text" data-en="Call Control & Interruptions" data-cy="Rheoli Galwadau ac Ymyriadau">Call Control & Interruptions</h2>
+        </div>
+        <div class="chat-row">
+            <div class="advisor-icon">👩🏽‍💻</div>
+            <div class="advisor-bubble trans-text" data-en='"That sounds like something I can help you with, I just need to ask a few questions to get the key facts..."' data-cy='"Mae hynny’n swnio fel rhywbeth y gallaf eich helpu ag ef, mae angen i mi ofyn ychydig o gwestiynau i gael y ffeithiau allweddol..."'>"That sounds like something I can help you with, I just need to ask a few questions to get the key facts..."</div>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en="Scenario: Caller is over-explaining or irrelevant" data-cy="Senario: Galwr yn gorbwysleisio neu'n amherthnasol">Scenario: Caller is over-explaining or irrelevant</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"I am sorry to interrupt, but I want to make sure I am following the timeline correctly. Can we focus on when you first noticed the fault?"' data-cy='"Mae’n ddrwg gen i am dorri ar draws, ond rwyf am wneud yn siŵr fy mod yn dilyn y llinell amser yn gywir. A allwn ganolbwyntio ar bryd y gwnaethoch chi sylwi ar y nam am y tro cyntaf?"'>"I am sorry to interrupt, but I want to make sure I am following the timeline correctly. Can we focus on when you first noticed the fault?"</li>
+                <li class="trans-text" data-en='"I have all the background information I need now. To move us forward, how exactly did you pay for the item?"' data-cy='"Mae gen i’r holl wybodaeth gefndir sydd ei hangen arnaf nawr. Er mwyn symud ymlaen, sut yn union y gwnaethoch chi dalu am yr eitem?"'>"I have all the background information I need now. To move us forward, how exactly did you pay for the item?"</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="hypo" class="section-card">
+        <div class="section-header">
+            <div class="section-number">2</div>
+            <h2 class="trans-text" data-en='Hypothetical Questions ("What if?")' data-cy='Cwestiynau Damcaniaethol ("Beth os?")'>Hypothetical Questions ("What if?")</h2>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en='"But what if they say no? What if they only offer half?"' data-cy='"Ond beth os byddan nhw’n dweud na? Beth os ydyn nhw ond yn cynnig hanner?"'>"But what if they say no? What if they only offer half?"</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"At this stage, we have to see how the trader responds to your first step. Our next advice will depend entirely on their specific reply."' data-cy='"Ar y cam hwn, mae’n rhaid i ni weld sut mae’r masnachwr yn ymateb i’ch cam cyntaf. Bydd ein cyngor nesaf yn dibynnu’n gyfan gwbl ar eu hateb penodol nhw."' >"At this stage, we have to see how the trader responds to your first step. Our next advice will depend entirely on their specific reply."</li>
+                <li class="trans-text" data-en='"The best way forward is to follow the steps we’ve discussed today. Once you have their response, if it is not what you were looking for, please call us back."' data-cy='"Y ffordd orau ymlaen yw dilyn y camau rydym wedi’u trafod heddiw. Unwaith y byddwch chi’n cael eu hymateb, os nad yw’n beth roeddech chi’n chwilio amdano, ffoniwch ni yn ôl."' >"The best way forward is to follow the steps we’ve discussed today. Once you have their response, if it is not what you were looking for, please call us back."</li>
+                <li class="trans-text" data-en='"I want to make sure the advice I give you is relevant. Let us focus on this first action, and we are here to support you."' data-cy='"Rwyf am wneud yn siŵr bod y cyngor a roddaf i chi yn berthnasol. Gadewch i ni ganolbwyntio ar y cam gweithredu cyntaf hwn, ac rydym yma i’ch cefnogi chi."' >"I want to make sure the advice I give you is relevant. Let us focus on this first action, and we are here to support you."</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="boundaries" class="section-card">
+        <div class="section-header">
+            <div class="section-number">3</div>
+            <h2 class="trans-text" data-en="Professional Boundaries" data-cy="Ffiniau Proffesiynol">Professional Boundaries</h2>
+        </div>
+        <div class="chat-row">
+            <div class="advisor-icon">👩🏽‍💻</div>
+            <div class="advisor-bubble trans-text" data-en='"We can provide you with advice on your consumer rights, but we are unable to get involved with the dispute itself or contact the trader on your behalf."' data-cy='"Gallwn roi cyngor i chi ar eich hawliau defnyddwyr, ond nid ydym yn gallu cymryd rhan yn yr anghydfod ei hun nac yn cysylltu â’r masnachwr ar eich rhan."'>"We can provide you with advice on your consumer rights, but we are unable to get involved with the dispute itself or contact the trader on your behalf."</div>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en='"What would YOU do?"' data-cy='"Beth fyddech CHI yn ei wneud?"'>"What would YOU do?"</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"As an impartial service, I cannot provide a personal opinion. By remaining impartial, we ensure the advice we give is based strictly on the law."' data-cy='"Fel gwasanaeth diduedd, ni allaf roi barn bersonol. Trwy aros yn ddiduedd, rydym yn sicrhau bod y cyngor a roddwn yn seiliedig yn llym ar y gyfraith."' >"As an impartial service, I cannot provide a personal opinion. By remaining impartial, we ensure the advice we give is based strictly on the law."</li>
+                <li class="trans-text" data-en='"I can explain the different legal paths available so you can choose the one that is best for you."' data-cy='"Gallaf esbonio’r gwahanol lwybrau cyfreithiol sydd ar gael fel y gallwch chi ddewis yr un sydd orau i chi."' >"I can explain the different legal paths available so you can choose the one that is best for you."</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="emotion" class="section-card">
+        <div class="section-header">
+            <div class="section-number">4</div>
+            <h2 class="trans-text" data-en="Managing High Emotion & Frustration" data-cy="Rheoli Emosiwn Uchel a Rwystredigaeth">Managing High Emotion & Frustration</h2>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en='"I spent my last bit of money... I am completely stuck!"' data-cy='"Gwariais fy arian olaf... rwyf wedi mynd yn sownd yn llwyr!"'>"I spent my last bit of money... I am completely stuck!"</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"I can hear how frustrating this is. I am here now to help you find the best way forward regarding the consumer issue."' data-cy='"Gallaf glywed pa mor rwystredig yw hyn. Rwyf yma nawr i’ch helpu i ddod o hyd i’r ffordd orau ymlaen o ran y mater defnyddwyr."' >"I can hear how frustrating this is. I am here now to help you find the best way forward regarding the consumer issue."</li>
+                <li class="trans-text" data-en='"I understand you are upset. Let’s focus on the facts so I can give you the right steps to take today."' data-cy='"Rwy’n deall eich bod yn ofidus. Gadewch i ni ganolbwyntio ar y ffeithiau fel y gallaf roi’r camau cywir i chi eu cymryd heddiw."' >"I understand you are upset. Let’s focus on the facts so I can give you the right steps to take today."</li>
+                <li class="trans-text" data-en='"I realize this is not the news you hoped for, but I want to be honest about the legal position."' data-cy='"Rwy’n sylweddoli nad dyma’r newyddion roeddech yn gobeithio amdano, ond rwyf am fod yn onest am y sefyllfa gyfreithiol."' >"I realize this is not the news you hoped for, but I want to be honest about the legal position."</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="norights" class="section-card">
+        <div class="section-header">
+            <div class="section-number">5</div>
+            <h2 class="trans-text" data-en="No Legal Rights to Argue" data-cy="Dim Hawliau Cyfreithiol i Ddadlau">No Legal Rights to Argue</h2>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en='"Surely there is a law that says they have to?"' data-cy='"Siawns nad oes cyfraith sy’n dweud bod yn rhaid iddyn nhw?"'>"Surely there is a law that says they have to?"</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"I understand it feels unfair, but under consumer law, there is no automatic right to a refund just because [Change of mind / time limit]."' data-cy='"Rwy’n deall ei fod yn teimlo’n annheg, ond o dan gyfraith defnyddwyr, nid oes hawl awtomatig i ad-daliad dim ond oherwydd [Newid meddwl / terfyn amser]."' >"I understand it feels unfair, but under consumer law, there is no automatic right to a refund just because [Change of mind / time limit]."</li>
+                <li class="trans-text" data-en='"I want to be honest with you so you don’t spend time pursuing a claim that doesn’t have a legal basis."' data-cy='"Rwyf am fod yn onest â chi fel nad ydych chi’n treulio amser yn dilyn hawliad nad oes ganddo sail gyfreithiol."' >"I want to be honest with you so you don’t spend time pursuing a claim that doesn’t have a legal basis."</li>
+                <li class="trans-text" data-en='"While you don’t have a legal right, you could still ask for a gesture of goodwill, though they are not legally required to offer one."' data-cy='"Er nad oes gennych hawl gyfreithiol, gallwch barhau i ofyn am arwydd o ewyllys da, er nad oes gofyniad cyfreithiol iddynt gynnig un."' >"While you don’t have a legal right, you could still ask for a gesture of goodwill, though they are not legally required to offer one."</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="court" class="section-card">
+        <div class="section-header">
+            <div class="section-number">6</div>
+            <h2 class="trans-text" data-en="The Last Resort: Court & Financial Loss" data-cy="Y Cam Olaf: Llys a Cholled Ariannol">The Last Resort: Court & Financial Loss</h2>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en='"I can’t afford court!"' data-cy='"Ni allaf fforddio llys!"'>"I can’t afford court!"</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"I hear what you are saying about costs. While court is the final legal step, it is entirely your decision whether you feel it is the right path for you."' data-cy='"Rwy’n clywed yr hyn rydych chi’n ei ddweud am gostau. Er mai’r llys yw’r cam cyfreithiol olaf, eich penderfyniad chi yn gyfan gwbl yw a ydych chi’n teimlo mai dyna’r llwybr cywir i chi."' >"I hear what you are saying about costs. While court is the final legal step, it is entirely your decision whether you feel it is the right path for you."</li>
+                <li class="trans-text" data-en='"If you decide not to pursue court action, then unfortunately there are no further steps I can provide regarding this specific dispute."' data-cy='"Os penderfynwch beidio â dilyn camau cyfreithiol, yna yn anffodus nid oes unrhyw gamau pellach y gallaf eu darparu ynghylch yr anghydfod penodol hwn."' >"If you decide not to pursue court action, then unfortunately there are no further steps I can provide regarding this specific dispute."</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="wrong" class="section-card">
+        <div class="section-header">
+            <div class="section-number">7</div>
+            <h2 class="trans-text" data-en="Wrong Department / Signposting" data-cy="Adran Anghywir / Cyfeirio">Wrong Department / Signposting</h2>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en='"I’ve been trying to call my Local office all day!"' data-cy='"Rwyf wedi bod yn ceisio ffonio fy swyddfa Leol drwy’r dydd!"'>"I’ve been trying to call my Local office all day!"</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"I understand it’s frustrating. Our local offices are extremely busy. I can only advise that you keep trying their number."' data-cy='"Rwy’n deall ei fod yn rwystredig. Mae ein swyddfeydd lleol yn hynod brysur. Ni allaf ond eich cynghori i ddal ati i geisio eu rhif."' >"I understand it’s frustrating. Our local offices are extremely busy. I can only advise that you keep trying their number."</li>
+                <li class="trans-text" data-en='"To ensure I give you the correct contact details for your area, may I take your postcode?"' data-cy='"Er mwyn sicrhau fy mod yn rhoi’r manylion cyswllt cywir i chi ar gyfer eich ardal, a gaf i gymryd eich cod post?"' >"To ensure I give you the correct contact details for your area, may I take your postcode?"</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="abusive" class="section-card">
+        <div class="section-header">
+            <div class="section-number">8</div>
+            <h2 class="trans-text" data-en="Dealing with Abusive Language" data-cy="Delio ag Iaith Sarhaus">Dealing with Abusive Language</h2>
+        </div>
+        <div class="chat-row">
+            <div class="advisor-icon">👩🏽‍💻</div>
+            <div class="advisor-bubble trans-text" data-en='"I genuinely want to help you, but I find it difficult when that language is used. Can we keep this professional?"' data-cy='"Rwyf wir eisiau eich helpu, ond rwy’n ei chael hi’n anodd pan ddefnyddir yr iaith honno. A allwn gadw hyn yn broffesiynol?"'>"I genuinely want to help you, but I find it difficult when that language is used. Can we keep this professional?"</div>
+        </div>
+        <div class="script-box">
+            <ul class="script-list">
+                <li class="trans-text" data-en='"I will have to end this call if the language continues, as I want to focus on solving your issue."' data-cy='"Bydd yn rhaid i mi ddod â’r alwad hon i ben os bydd yr iaith yn parhau, oherwydd rwyf am ganolbwyntio ar ddatrys eich problem."' >"I will have to end this call if the language continues, as I want to focus on solving your issue."</li>
+            </ul>
+        </div>
+        <div class="tip-card">
+            <span class="icon">⚠️</span>
+            <span class="trans-text" data-en="Advisors can provide <strong>1 - 2 warnings</strong> for abusive language. If the behavior continues, the Advisor can terminate the call, ensuring they explicitly tell the caller they are terminating the call." data-cy="Gall cynghorwyr roi <strong>1 - 2 rybudd</strong> am iaith sarhaus. Os bydd yr ymddygiad yn parhau, gall y Cynghorydd ddod â'r alwad i ben, gan sicrhau eu bod yn dweud wrth y galwr yn benodol eu bod yn dod â'r alwad i ben.">Advisors can provide 1 - 2 warnings for abusive language. If the behavior continues, the Advisor can terminate the call, ensuring they explicitly tell the caller they are terminating the call.</span>
+        </div>
+    </div>
+
+    <div id="circular" class="section-card">
+        <div class="section-header">
+            <div class="section-number">9</div>
+            <h2 class="trans-text" data-en="Closing a Circular Call" data-cy="Cau Galwad Gylchol">Closing a Circular Call</h2>
+        </div>
+        <div class="script-box">
+            <span class="caller-prompt trans-text" data-en="Scenario: Caller repeats themselves after advice is given" data-cy="Senario: Galwr yn ailadrodd eu hunain ar ôl i gyngor gael ei roi">Scenario: Caller repeats themselves after advice is given</span>
+            <ul class="script-list">
+                <li class="trans-text" data-en='"I’ve provided the full advice available today. To move this forward, the next step is for you to [Action]."' data-cy='"Rwyf wedi rhoi’r cyngor llawn sydd ar gael heddiw. Er mwyn symud hyn ymlaen, y cam nesaf i chi yw [Gweithred]."' >"I’ve provided the full advice available today. To move this forward, the next step is for you to [Action]."</li>
+                <li class="trans-text" data-en='"I am going to let you go now so you can take those next steps we discussed."' data-cy='"Rwy’n mynd i’ch gadael chi fynd nawr fel y gallwch chi gymryd y camau nesaf hynny y buon ni’n eu trafod."' >"I am going to let you go now so you can take those next steps we discussed."</li>
+                <li class="trans-text" data-en='"As we have reached the end of the advice I can offer, I will need to bring the call to a close now."' data-cy='"Gan ein bod wedi cyrraedd diwedd y cyngor y gallaf ei gynnig, bydd angen i mi ddod â’r alwad i ben nawr."' >"As we have reached the end of the advice I can offer, I will need to bring the call to a close now."</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="closing" class="section-card" style="border-bottom: 6px solid var(--ca-green);">
+        <div class="section-header">
+            <div class="section-number">10</div>
+            <h2 class="trans-text" data-en="Final Closing" data-cy="Cau Terfynol">Final Closing</h2>
+        </div>
+        <div class="tip-card">
+            <span class="icon">✅</span>
+            <span class="trans-text" data-en="<strong>MANDATORY:</strong> Provide the <strong>Case Reference Number</strong> and ensure they have written it down." data-cy="<strong>GWAHARDDOL:</strong> Rhowch y <strong>Rhif Cyfeirnod Achos</strong> a sicrhewch eu bod wedi’i ysgrifennu i lawr."><strong>MANDATORY:</strong> Provide the <strong>Case Reference Number</strong> and ensure they have written it down.</span>
+        </div>
+    </div>
+
+    <div class="deflated-notice trans-text" data-en="<strong>If after a challenging interaction you are feeling deflated, Speak with your TL about having 5 minutes to reset</strong>" data-cy="<strong>Os ydych chi'n teimlo'n ddigalon ar ôl rhyngweithio heriol, Siaradwch â'ch TL am gael 5 munud i ailosod</strong>">
+        <strong>If after a challenging interaction you are feeling deflated, Speak with your TL about having 5 minutes to reset</strong>
+    </div>
+
+    <footer>
+        <span id="footer-text">This tool was created by <strong>Liam</strong> at <strong>Citizens Advice Cardiff & Vale</strong>.<br>This tool is experimental, so use at your own risk.<br>This tool was designed by Liam at Citizens Advice Cardiff & Vale.</span>
+    </footer>
+</div>
+
+<script>
+    let currentLang = 'en';
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'cy' : 'en';
+        const btn = document.getElementById('lang-btn');
+        const title = document.getElementById('main-title');
+        const subtitle = document.getElementById('main-subtitle');
+        const jumpTitle = document.getElementById('jump-title');
+        const sidebarLabel = document.getElementById('sidebar-label');
+        const footer = document.getElementById('footer-text');
+
+        btn.innerText = currentLang === 'en' ? 'Cymraeg' : 'English';
+        title.innerText = currentLang === 'en' ? 'Advisor Call Handling Toolkit' : 'Pecyn Cymorth Trin Galwadau Cynghorwyr';
+        subtitle.innerText = currentLang === 'en' ? 'Citizens Advice Cardiff & Vale | Consumer Service Specialist Guidance' : 'Cyngor ar Bopeth Caerdydd a’r Fro | Arweiniad Arbenigol Gwasanaeth Defnyddwyr';
+        jumpTitle.innerText = currentLang === 'en' ? 'QUICK JUMP' : 'NEIDIO CYFLYM';
+        sidebarLabel.innerText = currentLang === 'en' ? 'CARDIFF & VALE' : 'CAERDYDD A’R FRO';
+        
+        footer.innerHTML = currentLang === 'en' ? 
+            'This tool was created by <strong>Liam</strong> at <strong>Citizens Advice Cardiff & Vale</strong>.<br>This tool is experimental, so use at your own risk.<br>This tool was designed by Liam at Citizens Advice Cardiff & Vale.' :
+            'Crëwyd yr offeryn hwn gan <strong>Liam</strong> yn <strong>Cyngor ar Bopeth Caerdydd a’r Fro</strong>.<br>Mae’r offeryn hwn yn arbrofol, felly defnyddiwch ef ar eich risg eich hun.<br>Cynlluniwyd yr offeryn hwn gan Liam yn Cyngor ar Bopeth Caerdydd a’r Fro.';
+
+        document.querySelectorAll('.nav-link').forEach(link => { link.innerText = link.getAttribute(`data-${currentLang}`); });
+        document.querySelectorAll('.trans-text').forEach(el => { el.innerHTML = el.getAttribute(`data-${currentLang}`); });
+    }
+</script>
+</body>
+</html>
